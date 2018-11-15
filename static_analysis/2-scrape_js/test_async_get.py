@@ -47,11 +47,9 @@ def load_url(url, filename, timeout):
 
     if response.status_code == 200:
         content = response.text
-        sys.stdout.write("[%d]" % len(content))
+        sys.stdout.write("[%s-%d]]\n" % (url, len(content)))
         sys.stdout.flush()
         return response.status_code, content, filename
-    sys.stdout.write("o")
-    sys.stdout.flush()
 
     # Don't forget to cast status code to int. Computers are the suck.
     return int(response.status_code), "", filename
@@ -70,13 +68,10 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=CONNECTIONS) as executor:
 
     for future in concurrent.futures.as_completed(future_to_url):
         http_status, content, filename = future.result()
-        sys.stdout.write("O")
-        sys.stdout.flush()
         if http_status == 200 and content:
             print(filename)
             with open(filename, "w") as source_file:
                 source_file.write(content)
-                sys.stdout.write("#")
 
     time2 = time.time()
 
